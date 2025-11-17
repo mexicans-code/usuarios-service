@@ -20,6 +20,9 @@ public class UsuarioEntity {
     private String correo;
     private String contrasena;
     private String rol;
+    //Funcionalidad de habilitar --Maria Fernanda Rosas Briones IDGS12
+    @Column(nullable = false)
+    private int estatus = 1; 
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProgramaUsuario> programas;
