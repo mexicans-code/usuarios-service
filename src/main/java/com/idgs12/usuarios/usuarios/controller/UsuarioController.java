@@ -2,7 +2,6 @@ package com.idgs12.usuarios.usuarios.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,7 +58,8 @@ public class UsuarioController {
         UsuarioEntity updated = usuarioService.saveUsuarioConProgramas(usuarioDTO);
         return ResponseEntity.ok(updated);
     }
-    //Funcionalidad de habilitar --Maria Fernanda Rosas Briones IDGS12
+
+    /*Funcionalidad de habilitar --Maria Fernanda Rosas Briones IDGS12
     @PutMapping("/habilitar/{id}")
     public ResponseEntity<String> habilitarUsuario(@PathVariable int id) {
         boolean resultado = usuarioService.habilitarUsuario(id);
@@ -78,6 +78,6 @@ public class UsuarioController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 
 }

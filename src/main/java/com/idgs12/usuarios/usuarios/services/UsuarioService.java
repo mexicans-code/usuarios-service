@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.idgs12.usuarios.usuarios.dto.UsuarioDTO;
 
-import com.idgs12.usuarios.usuarios.dto.ProgramaDTO;
-import com.idgs12.usuarios.usuarios.dto.UsuarioDTO;
-import com.idgs12.usuarios.usuarios.dto.UsuarioResponseDTO;
+import com.idgs12.usuarios.usuarios.dto.*;
 import com.idgs12.usuarios.usuarios.repository.UsuarioRepository;
 import com.idgs12.usuarios.usuarios.repository.ProgramaUsuarioRepository;
 import com.idgs12.usuarios.usuarios.FeignClient.ProgramaFeignClient;
@@ -28,9 +26,12 @@ public class UsuarioService {
     @Autowired
     private ProgramaFeignClient programaFeignClient;
 
-    
+    /**
+     * Obtiene todos los usuarios y los convierte a DTOs, incluyendo la información de los programas asociados
+     */
     public List<UsuarioResponseDTO> getAllUsuariosDTO() {
         return usuarioRepository.findAll().stream().map(usuario -> {
+            // Mapear campos básicos del usuario
             UsuarioResponseDTO dto = new UsuarioResponseDTO();
             dto.setId(usuario.getId());
             dto.setNombre(usuario.getNombre());
@@ -40,22 +41,27 @@ public class UsuarioService {
             dto.setRol(usuario.getRol());
             dto.setMatricula(usuario.getMatricula());
 
+            // Verifica si el usuario tiene programas asociados
             if (usuario.getProgramas() != null && !usuario.getProgramas().isEmpty()) {
+                // Obtiene solo los IDs de los programas del usuario
                 List<Long> programaIds = usuario.getProgramas().stream()
-                        .map(ProgramaUsuario::getProgramaId)
-                        .collect(Collectors.toList());
+                        .map(ProgramaUsuario::getProgramaId) // Por cada relación ProgramaUsuario, toma el ID del programa
+                        .collect(Collectors.toList()); // Convierte el stream a una lista de IDs
 
+                // Llama al microservicio de programas para obtener los detalles de cada programa por sus IDs
                 List<ProgramaDTO> programas = programaFeignClient.obtenerProgramasPorIds(programaIds)
                         .stream()
-                        .map(p -> {
+                        .map(p -> { // Por cada programa recibido, crea un DTO
                             ProgramaDTO pdto = new ProgramaDTO();
-                            pdto.setId(p.getId());
-                            pdto.setNombre(p.getNombre());
-                            return pdto;
-                        }).collect(Collectors.toList());
+                            pdto.setId(p.getId());       // Asigna el ID del programa
+                            pdto.setNombre(p.getNombre()); // Asigna el nombre del programa
+                            return pdto; // Devuelve el DTO simplificado
+                        }).collect(Collectors.toList()); // Convierte el stream a lista de DTOs
 
+                // Asigna la lista de programas al DTO del usuario que será devuelto
                 dto.setProgramas(programas);
             }
+
 
             return dto;
         }).collect(Collectors.toList());
@@ -99,30 +105,6 @@ public class UsuarioService {
 
         return savedUsuario;
     }
-    //Funcionalidad de habilitar --Maria Fernanda Rosas Briones IDGS12
-    @Transactional
-    public boolean habilitarUsuario(int id) {
-        UsuarioEntity usuario = usuarioRepository.findById(id).orElse(null);
-
-
-    // Método para deshabilitar usuario
-    @Transactional
-    public boolean deshabilitarUsuario(int id) {
-        UsuarioEntity usuario = usuarioRepository.findById(id).orElse(null);
-        if (usuario == null) {
-            return false;
-        }
-
-        usuario.setEstatus(1); // Habilitado
-        usuarioRepository.save(usuario);
-
-        return true;
-    }    
-        usuario.setActivo(false); // Cambiamos el estado a false
-        usuarioRepository.save(usuario);
-
-        return true;
-    }
 
     public UsuarioResponseDTO getUsuarioDTOById(int id) {
         UsuarioEntity usuario = usuarioRepository.findById(id).orElse(null);
@@ -157,5 +139,30 @@ public class UsuarioService {
 
         return dto;
     }
+
+    /*Funcionalidad de habilitar --Maria Fernanda Rosas Briones IDGS12
+    @Transactional
+    public boolean habilitarUsuario(int id) {
+        UsuarioEntity usuario = usuarioRepository.findById(id).orElse(null);
+
+
+    // Método para deshabilitar usuario
+    @Transactional
+    public boolean deshabilitarUsuario(int id) {
+        UsuarioEntity usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario == null) {
+            return false;
+        }
+
+        usuario.setEstatus(1); // Habilitado
+        usuarioRepository.save(usuario);
+
+        return true;
+    }    
+        usuario.setActivo(false); // Cambiamos el estado a false
+        usuarioRepository.save(usuario);
+
+        return true;
+    } */
     
 }
