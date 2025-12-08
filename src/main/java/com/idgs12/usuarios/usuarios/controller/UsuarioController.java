@@ -59,7 +59,6 @@ public class UsuarioController {
         return ResponseEntity.ok(updated);
     }
 
-    /*Funcionalidad de habilitar --Maria Fernanda Rosas Briones IDGS12
     @PutMapping("/habilitar/{id}")
     public ResponseEntity<String> habilitarUsuario(@PathVariable int id) {
         boolean resultado = usuarioService.habilitarUsuario(id);
@@ -68,7 +67,6 @@ public class UsuarioController {
         } else {
             return ResponseEntity.badRequest().body("No se encontró el usuario");
 
-    // Funcionalidad para deshabilitar un usuario
     @Transactional
     @PutMapping("/deshabilitar/{id}")
     public ResponseEntity<Boolean> deshabilitarUsuario(@PathVariable int id) {
